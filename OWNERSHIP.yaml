@@ -1,0 +1,7 @@
+bounded_context: "contracts"
+service_id: "svc-ctr-schema-registry"
+application_id: "app.ctr.schema-registry"
+data_owner_pattern: "db_ctr_schema_registry_prod"
+event_namespace: "evt.ctr.schema"
+owning_squad: "API Governance Guild"
+wave: "4"
