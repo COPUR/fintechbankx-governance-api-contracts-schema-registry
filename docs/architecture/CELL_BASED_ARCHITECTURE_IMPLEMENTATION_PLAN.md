@@ -2,8 +2,8 @@
 
 ## Repository
 
-- Name: \
-- Generated: \
+- Name: fintechbankx-governance-api-contracts-schema-registry
+- Generated: 2026-03-24
 
 ## Objective
 
