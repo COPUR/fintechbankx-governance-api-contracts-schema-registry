@@ -24,6 +24,10 @@ const breaking = {
   'breaking-enum-value-removed': [`removed-enum-value ${REL} $.status "CLOSED"`],
   'breaking-additional-properties-tightened': [`tightened-additional-properties ${REL} $`],
   'breaking-major-version-in-place': [`changed-id ${REL}`, `changed-topic ${REL}`],
+  'breaking-no-longer-required': [`no-longer-required ${REL} $.sampleId`],
+  'breaking-changed-event-type': [`changed-event-type ${REL}`],
+  'breaking-changed-constraint': [`changed-constraint ${REL} $.sampleId pattern`],
+  'breaking-changed-const': [`changed-const ${REL} $.kind`],
 };
 
 for (const [name, expected] of Object.entries(breaking)) {

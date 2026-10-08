@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// BACKWARD compatibility gate for event payload schemas.
+// FULL (backward and forward) compatibility gate for event payload schemas.
 // Status: Proposed (API Governance Guild review required). Policy: compatibility/POLICY.md.
 //
 // Usage: BASE_REF=origin/main node scripts/ci/check-compatibility.mjs
@@ -32,7 +32,7 @@ const isSchema = (f) => /^schemas\/.+\.schema\.json$/.test(f);
 const baseFiles = git(['ls-tree', '-r', '--name-only', base, '--', 'schemas']).split('\n').filter(isSchema);
 const accepted = readAccepted(fs.existsSync('compatibility/accepted-breaking.txt') ? fs.readFileSync('compatibility/accepted-breaking.txt', 'utf8') : '');
 
-console.log(`schema compatibility check (BACKWARD): base ${baseRef} (merge base ${base.slice(0, 12)}), ${baseFiles.length} schema(s) at base`);
+console.log(`schema compatibility check (FULL): base ${baseRef} (merge base ${base.slice(0, 12)}), ${baseFiles.length} schema(s) at base`);
 let failed = 0;
 let changed = 0;
 for (const rel of baseFiles.sort()) {

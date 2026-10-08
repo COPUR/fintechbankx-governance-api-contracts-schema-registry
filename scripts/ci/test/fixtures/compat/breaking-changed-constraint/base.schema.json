@@ -21,8 +21,7 @@
       ]
     },
     "note": {
-      "type": "string",
-      "description": "Free text, no personal data."
+      "type": "string"
     },
     "amount": {
       "$ref": "#/$defs/MonetaryAmount"
@@ -44,6 +43,5 @@
         }
       }
     }
-  },
-  "description": "Clarified wording."
+  }
 }

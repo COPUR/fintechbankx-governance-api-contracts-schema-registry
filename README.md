@@ -61,7 +61,6 @@ Status: **Proposed** (API Governance Guild review required).
 |---|---|
 | `schemas/<ctx>/<aggregate>/<event>.v<N>.schema.json` | `data` payload of topic `evt.<ctx>.<aggregate>.<event>.v<N>` (JSON Schema draft 2020-12, `x-topic`, `$id` `https://schemas.fintechbankx.example/<ctx>/<aggregate>/<event>/v<N>`) |
 | `schemas/common/event-envelope.v1.schema.json` | Standard event envelope shared by every topic |
-| `schemas/of/payment/submitted.v1.schema.json` | Imported from the source monorepo contract `contracts/events/open-finance/payment-submitted-v1.schema.json` (legacy topic `openfinance.provider.payment.v1`; owning service not assigned yet) |
 | [`compatibility/POLICY.md`](compatibility/POLICY.md) | Compatibility mode, breaking-change rules, exceptions, provider registration flow, versioning |
 | `compatibility/accepted-breaking.txt` | Approved exceptions to the compatibility gate |
 | `scripts/sync/from-asyncapi.mjs` | Regenerates the payload schemas from the AsyncAPI catalog |
@@ -71,10 +70,10 @@ from `fintechbankx-governance-api-contracts-asyncapi-catalog`) plus the imported
 
 ### Compatibility mode
 
-BACKWARD, applied in both directions in practice: consumers on a new schema must read old events, and events
-from new producers must not break consumers on the old schema. A change to an existing `.v<N>` file fails the
-gate when it removes a property or schema, makes a property required, changes a type, removes an enum value,
-tightens `additionalProperties`, or edits `$id` / `x-topic`. A breaking change is a new file `.v<N+1>` on a new
+FULL (backward and forward): consumers on a new schema must read old events, and events from new producers
+must not break consumers on the old schema. A change to an existing `.v<N>` file fails the gate when it removes
+a property or schema, makes a property required or no longer required, changes a type, a `const` or a validation
+keyword, removes an enum value, tightens `additionalProperties`, or edits `$id` / `x-topic` / `x-event-type`. A breaking change is a new file `.v<N+1>` on a new
 topic with dual-publish. Details: [`compatibility/POLICY.md`](compatibility/POLICY.md).
 
 ### Registering a new event

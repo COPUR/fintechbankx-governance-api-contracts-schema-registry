@@ -1,19 +1,25 @@
 // Backward-compatibility rules for event payload schemas.
 // Status: Proposed (API Governance Guild review required). Policy: compatibility/POLICY.md.
 //
-// A change to an existing schema file must keep both directions working:
+// Mode FULL: a change to an existing schema file must keep both directions working:
 //   - consumers on the new schema can read data written with the old schema, and
 //   - data written by new producers does not break consumers still on the old schema.
 // Practical rules (each finding key is "<rule> <file> [<path>] [<value>]"):
 //   removed-schema                  the file was deleted
 //   changed-id / changed-topic      $id or x-topic changed in place (a new major version is a new .v<N+1> file)
+//   changed-event-type              x-event-type changed in place (consumers route on eventType)
 //   removed-property                a property path is gone (properties inside $ref/$defs and allOf included)
 //   newly-required                  a property became required, or a new property is required
+//   no-longer-required              a property was required and is optional now (old consumers reject events
+//                                   from new producers that omit it)
+//   changed-const                   a const was added, removed or changed
+//   changed-constraint              a validation keyword (pattern, format, length, range, item limits,
+//                                   uniqueItems, multipleOf) was added, removed or changed
 //   changed-type                    the declared JSON type(s) of a path changed (widening included)
 //   removed-enum-value              an enum value is gone
 //   tightened-additional-properties additionalProperties went from absent/true to false or a schema,
 //                                   or from a schema to false
-// Annotations (description, examples, title, x-*) and validation keywords not listed above are not checked.
+// Annotations (description, examples, title, x-* other than x-topic and x-event-type) are not checked.
 
 const resolveLocal = (root, ref) => {
   if (!ref.startsWith('#')) throw new Error(`only local $refs are supported in registry schemas: ${ref}`);
@@ -26,6 +32,11 @@ const resolveLocal = (root, ref) => {
   return node;
 };
 
+const CONSTRAINT_KEYWORDS = [
+  'pattern', 'format', 'minLength', 'maxLength', 'minimum', 'maximum', 'exclusiveMinimum', 'exclusiveMaximum',
+  'multipleOf', 'minItems', 'maxItems', 'uniqueItems',
+];
+
 const apNorm = (v) => {
   if (v === undefined || v === true) return 'open';
   if (v === false) return 'closed';
@@ -34,12 +45,14 @@ const apNorm = (v) => {
 
 /** Merged view of a list of schemas (allOf semantics, local $refs followed). */
 function view(root, schemas) {
-  const v = { types: new Set(), props: new Map(), required: new Set(), items: [], enum: null, ap: undefined };
+  const v = { types: new Set(), props: new Map(), required: new Set(), items: [], enum: null, ap: undefined, const: undefined, constraints: {} };
   const visit = (s, depth) => {
     if (depth > 40 || s === null || typeof s !== 'object') return;
     if (typeof s.$ref === 'string') visit(resolveLocal(root, s.$ref), depth + 1);
     if (s.type !== undefined) (Array.isArray(s.type) ? s.type : [s.type]).forEach((t) => v.types.add(t));
     if (Array.isArray(s.enum)) v.enum = [...(v.enum ?? []), ...s.enum];
+    if (s.const !== undefined) v.const = JSON.stringify(s.const);
+    for (const k of CONSTRAINT_KEYWORDS) if (s[k] !== undefined) v.constraints[k] = JSON.stringify(s[k]);
     if (s.additionalProperties !== undefined) v.ap = s.additionalProperties;
     if (Array.isArray(s.required)) s.required.forEach((r) => v.required.add(r));
     for (const [name, sub] of Object.entries(s.properties ?? {})) {
@@ -53,7 +66,7 @@ function view(root, schemas) {
   return v;
 }
 
-/** Map<path, { types, required, enum, ap, isObject }>; root '$', properties '$.a.b', array items '[]'. */
+/** Map<path, { types, required, enum, const, constraints, ap, isObject }>; root '$', properties '$.a.b', array items '[]'. */
 export function flattenSchema(schema) {
   const out = new Map();
   const walk = (schemas, p, required, depth) => {
@@ -63,6 +76,8 @@ export function flattenSchema(schema) {
       types: [...v.types].sort().join('|') || null,
       required,
       enum: v.enum ? [...new Set(v.enum.map((x) => JSON.stringify(x)))].sort() : null,
+      const: v.const,
+      constraints: v.constraints,
       ap: apNorm(v.ap),
       isObject: v.types.has('object') || v.props.size > 0,
     });
@@ -78,6 +93,7 @@ export function compareSchemas(rel, base, head) {
   const add = (rule, subject, detail) => findings.push({ rule, key: `${rule} ${rel}${subject ? ` ${subject}` : ''}`, detail });
   if (base.$id !== head.$id) add('changed-id', '', `$id changed from ${base.$id} to ${head.$id}; publish a new major version as a new file`);
   if (base['x-topic'] !== head['x-topic']) add('changed-topic', '', `x-topic changed from ${base['x-topic']} to ${head['x-topic']}; publish a new major version as a new file`);
+  if (base['x-event-type'] !== head['x-event-type']) add('changed-event-type', '', `x-event-type changed from ${base['x-event-type']} to ${head['x-event-type']}; publish a new major version as a new file`);
   const b = flattenSchema(base);
   const h = flattenSchema(head);
   for (const [p, bi] of b) {
@@ -87,6 +103,11 @@ export function compareSchemas(rel, base, head) {
       continue;
     }
     if (hi.required && !bi.required) add('newly-required', p, `${p} is now required`);
+    if (bi.required && !hi.required) add('no-longer-required', p, `${p} is no longer required`);
+    if (bi.const !== hi.const) add('changed-const', p, `const changed from ${bi.const} to ${hi.const}`);
+    for (const k of new Set([...Object.keys(bi.constraints), ...Object.keys(hi.constraints)])) {
+      if (bi.constraints[k] !== hi.constraints[k]) add('changed-constraint', `${p} ${k}`, `${k} changed from ${bi.constraints[k]} to ${hi.constraints[k]}`);
+    }
     if (bi.types && hi.types && bi.types !== hi.types) add('changed-type', p, `type changed from ${bi.types} to ${hi.types}`);
     if (bi.types && !hi.types) add('changed-type', p, `type constraint ${bi.types} was removed`);
     if (!bi.types && hi.types) add('changed-type', p, `type constraint ${hi.types} was added`);

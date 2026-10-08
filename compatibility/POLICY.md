@@ -16,7 +16,7 @@ Applies to every event payload schema under `schemas/`. Naming follows
   domain; it is an identifier, not a URL that is served.
 - JSON Schema draft 2020-12. Each file is self-contained (shared definitions are copied into `$defs`).
 
-## 2. Compatibility mode: BACKWARD (both directions in practice)
+## 2. Compatibility mode: FULL (backward and forward)
 
 A change to an existing `.v<N>` file must keep two things working:
 
@@ -34,6 +34,10 @@ The gate `scripts/ci/check-compatibility.mjs` compares every schema that exists 
 | `removed-property` | `$.note` removed, including properties inside `$defs` or `allOf` | old consumers read a field that is no longer produced |
 | `newly-required` | `note` added to `required`, or a new required property | old data does not carry it, so new consumers reject replayed events |
 | `changed-type` | `string` to `["string","null"]`, or `number` to `string` | either side fails to parse; widening to null breaks old consumers |
+| `no-longer-required` | `score` dropped from `required` | new producers may omit it and consumers on the old schema reject the event |
+| `changed-event-type` | `x-event-type` edited in the `.v1` file | consumers route on `eventType`; a new type is a new major version |
+| `changed-const` | a `const` added, removed or changed | either side rejects the other's value |
+| `changed-constraint` | `pattern`, `format`, length, range or item limits added, removed or changed | tightened: replayed events fail; loosened: old consumers reject new values |
 | `removed-enum-value` | `CLOSED` removed from `status` | old data still contains the value |
 | `tightened-additional-properties` | `additionalProperties` absent/`true` to `false` or a schema | old data with extra fields is rejected |
 
@@ -75,8 +79,10 @@ are still printed. Add an entry only in a PR approved by the API Governance Guil
    and warns about generated schemas whose channel disappeared. `--check` reports drift without writing.
 4. **Consumers** change last, against the merged schema.
 
-Schemas that do not come from the catalog (for example the imported monolith contract under
-`schemas/of/payment/`) carry their origin in `x-source` and are edited by hand under the same rules.
+Schemas that do not come from the catalog (imported monolith contracts) carry their origin in `x-source` and are
+edited by hand under the same rules. An imported contract enters the registry only once its owning context and
+namespace are decided: the monolith's open-finance `payment-submitted-v1` waits for the PISP ownership decision
+(alignment matrix row LP-07).
 
 ## 6. Versioning
 

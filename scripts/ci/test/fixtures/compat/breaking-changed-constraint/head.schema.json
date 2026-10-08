@@ -11,7 +11,8 @@
   "properties": {
     "sampleId": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "pattern": "^S-[0-9]+$"
     },
     "status": {
       "type": "string",
@@ -21,8 +22,7 @@
       ]
     },
     "note": {
-      "type": "string",
-      "description": "Free text, no personal data."
+      "type": "string"
     },
     "amount": {
       "$ref": "#/$defs/MonetaryAmount"
@@ -44,6 +44,5 @@
         }
       }
     }
-  },
-  "description": "Clarified wording."
+  }
 }
