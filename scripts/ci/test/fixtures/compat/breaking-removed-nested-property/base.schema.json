@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fintechbankx.example/tst/sample/created/v1",
+  "title": "Test.Sample.Created.v1 data",
+  "x-topic": "evt.tst.sample.created.v1",
+  "type": "object",
+  "required": [
+    "sampleId",
+    "amount"
+  ],
+  "properties": {
+    "sampleId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "OPEN",
+        "CLOSED"
+      ]
+    },
+    "note": {
+      "type": "string"
+    },
+    "amount": {
+      "$ref": "#/$defs/MonetaryAmount"
+    }
+  },
+  "$defs": {
+    "MonetaryAmount": {
+      "type": "object",
+      "required": [
+        "amount",
+        "currency"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string"
+        },
+        "currency": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
