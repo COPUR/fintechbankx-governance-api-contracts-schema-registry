@@ -51,6 +51,60 @@ Bu repository, FinTechBankX DDD/EDA dönüşümünde **svc-ctr-schema-registry**
 - [Transformation Plan](https://github.com/COPUR/fintechbankx-governance-architecture-enablement-enterprise-architecture/blob/main/docs/enterprisearchitecture/implementation-development/MICROSERVICES_TRANSFORMATION_PLAN.md)
 - [Capability Map (PUML)](https://github.com/COPUR/fintechbankx-governance-architecture-enablement-enterprise-architecture/blob/main/docs/puml/service-mesh/enterprise-capability-map.puml)
 - [Bu Repo Dokümantasyonu](./docs)
+- [Event Schema Compatibility Policy](./compatibility/POLICY.md)
+
+## Event schemas
+
+Status: **Proposed** (API Governance Guild review required).
+
+| Path | Content |
+|---|---|
+| `schemas/<ctx>/<aggregate>/<event>.v<N>.schema.json` | `data` payload of topic `evt.<ctx>.<aggregate>.<event>.v<N>` (JSON Schema draft 2020-12, `x-topic`, `$id` `https://schemas.fintechbankx.example/<ctx>/<aggregate>/<event>/v<N>`) |
+| `schemas/common/event-envelope.v1.schema.json` | Standard event envelope shared by every topic |
+| `schemas/of/payment/submitted.v1.schema.json` | Imported from the source monorepo contract `contracts/events/open-finance/payment-submitted-v1.schema.json` (legacy topic `openfinance.provider.payment.v1`; owning service not assigned yet) |
+| [`compatibility/POLICY.md`](compatibility/POLICY.md) | Compatibility mode, breaking-change rules, exceptions, provider registration flow, versioning |
+| `compatibility/accepted-breaking.txt` | Approved exceptions to the compatibility gate |
+| `scripts/sync/from-asyncapi.mjs` | Regenerates the payload schemas from the AsyncAPI catalog |
+
+Today the schemas cover `evt.ln.loan`, `evt.pay.payment`, `evt.pay.rtp` and `evt.cus.customer` (26 generated
+from `fintechbankx-governance-api-contracts-asyncapi-catalog`) plus the imported open-finance payment fact.
+
+### Compatibility mode
+
+BACKWARD, applied in both directions in practice: consumers on a new schema must read old events, and events
+from new producers must not break consumers on the old schema. A change to an existing `.v<N>` file fails the
+gate when it removes a property or schema, makes a property required, changes a type, removes an enum value,
+tightens `additionalProperties`, or edits `$id` / `x-topic`. A breaking change is a new file `.v<N+1>` on a new
+topic with dual-publish. Details: [`compatibility/POLICY.md`](compatibility/POLICY.md).
+
+### Registering a new event
+
+1. Provider repository: AsyncAPI contract and outbox publisher in the same PR.
+2. AsyncAPI catalog: mirror the contract in `asyncapi/<service-id>.yaml` and `catalog/index.json`.
+3. This repository: `node scripts/sync/from-asyncapi.mjs <path-to-asyncapi-catalog-checkout>`, then `npm test`, then PR.
+4. Consumers change last.
+
+### Checks
+
+Run with Node 22 (`ci/test` runs the same through `npm ci && npm test`, with full history):
+
+```bash
+npm ci
+npm test   # validate-schemas + check-compatibility (BASE_REF, default origin/main) + unit tests
+```
+
+| Script | Fails when |
+|---|---|
+| `scripts/ci/validate-schemas.mjs` | a file is outside the layout; invalid JSON; not draft 2020-12; does not compile (Ajv 2020 strict + ajv-formats); `$id` does not match the path; no `title`; `x-topic` missing, malformed, or not the same ctx/aggregate/event/version as the path; duplicate `$id` or `x-topic` |
+| `scripts/ci/check-compatibility.mjs` | a schema that exists at the merge base of `BASE_REF` changed incompatibly (rules above) and the finding is not in `compatibility/accepted-breaking.txt` |
+| `scripts/ci/test/*.test.mjs` | a compatibility rule stops failing on its fixture pair, or a compatible fixture starts failing |
+
+### Legacy SQL reference copies
+
+`database/*.sql` were seeded from the monorepo `security/database` directory (see `MIGRATION_GRANULARITY.md`).
+They are **legacy reference copies only**: this repository does not own, run or version any database. Each
+service owns its schema and migrations in its own repository (`db_<ctx>_<capability>_<env>`). The files are
+kept unchanged for traceability and are not checked by the gates above.
 
 ## Güvenlik ve Uyumluluk Notları
 - Gerçek secret değerleri repo veya `.env` içinde tutulmaz.
