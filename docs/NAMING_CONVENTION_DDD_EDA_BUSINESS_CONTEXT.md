@@ -165,15 +165,29 @@ Examples:
 
 ### Topic naming
 
+One topic per aggregate and major version. All events of one aggregate share the topic.
+
 Format:
 
-`evt.<context-code>.<aggregate>.<event-name>.v<major>`
+`evt.<context-code>.<aggregate>.v<major>`
 
 Examples:
 
-1. `evt.of.consent.created.v1`
-2. `evt.pay.payment.settled.v1`
-3. `evt.ln.loan.disbursed.v1`
+1. `evt.of.consent.v1`
+2. `evt.pay.payment.v1`
+3. `evt.ln.loan.v1`
+
+Rules:
+
+1. The record key is the `aggregateId`, so every event of one aggregate lands in one partition and consumers read
+   them in the order the producer committed them. Sagas (loan origination, repayment) rely on this.
+2. The event type travels in the envelope (`eventType`) and as the `eventType` record header. Consumers filter on
+   the header and ignore event types they do not handle.
+3. A breaking change to any event of the aggregate starts a new major topic (`evt.ln.loan.v2`); the producer
+   dual-publishes until every consumer has moved. Additive changes stay on the current topic.
+4. Order across different aggregates is never guaranteed.
+5. The earlier one-topic-per-event form (`evt.<context-code>.<aggregate>.<event-name>.v<major>`) is retired.
+   Decided by the owner on 2026-10-08 (ADR-019).
 
 ### Event type (header/payload metadata)
 
