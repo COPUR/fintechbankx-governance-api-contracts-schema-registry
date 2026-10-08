@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fintechbankx.example/ln/loan/rejected/v1",
+  "title": "Lending.Loan.Rejected.v1 data",
+  "x-status": "Proposed",
+  "x-topic": "evt.ln.loan.rejected.v1",
+  "x-event-type": "Lending.Loan.Rejected.v1",
+  "x-producer": "svc-ln-loan-lifecycle",
+  "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",
+  "x-source": "fintechbankx-governance-api-contracts-asyncapi-catalog asyncapi/svc-ln-loan-lifecycle.yaml#/components/schemas/LoanRejectedData",
+  "type": "object",
+  "description": "Payload of Lending.Loan.Rejected.v1.",
+  "properties": {
+    "loanId": {
+      "type": "string",
+      "description": "Loan id.",
+      "minLength": 1
+    },
+    "customerId": {
+      "type": "string",
+      "description": "Customer id.",
+      "minLength": 1
+    },
+    "reason": {
+      "type": "string",
+      "description": "Rejection reason code or text. Must not contain personal data."
+    }
+  },
+  "required": [
+    "loanId",
+    "customerId",
+    "reason"
+  ]
+}

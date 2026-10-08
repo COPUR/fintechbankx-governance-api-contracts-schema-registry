@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fintechbankx.example/cus/customer/contact-updated/v1",
+  "title": "Customer.Customer.ContactUpdated.v1 data",
+  "x-status": "Proposed",
+  "x-topic": "evt.cus.customer.contact-updated.v1",
+  "x-event-type": "Customer.Customer.ContactUpdated.v1",
+  "x-producer": "svc-cus-profile-kyc",
+  "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",
+  "x-source": "fintechbankx-governance-api-contracts-asyncapi-catalog asyncapi/svc-cus-profile-kyc.yaml#/components/schemas/CustomerContactUpdatedData",
+  "type": "object",
+  "description": "Payload of Customer.Customer.ContactUpdated.v1. Omitted from the source class: newEmail (personal data); newPhoneNumber (personal data).",
+  "properties": {
+    "customerId": {
+      "type": "string",
+      "description": "Customer id.",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "customerId"
+  ]
+}

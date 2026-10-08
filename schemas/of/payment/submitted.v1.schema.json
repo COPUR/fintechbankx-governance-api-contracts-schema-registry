@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fintechbankx.example/of/payment/submitted/v1",
+  "title": "OpenFinance.Payment.Submitted.v1 data",
+  "description": "Open Finance payment submitted fact, privacy-filtered by the provider outbox ACL (account references are always redacted). Imported from the source monorepo contract; the legacy topic is openfinance.provider.payment.v1 and x-topic is the standard target name. Owning service and namespace are not assigned yet.",
+  "x-status": "Proposed",
+  "x-topic": "evt.of.payment.submitted.v1",
+  "x-legacy-topic": "openfinance.provider.payment.v1",
+  "x-legacy-contract": "openfinance.payment-submitted:1",
+  "x-producer": null,
+  "x-source": "enterprise-loan-management-system contracts/events/open-finance/payment-submitted-v1.schema.json (original id https://schemas.example.internal/open-finance/payment-submitted-v1.schema.json)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "paymentId",
+    "consentId",
+    "status",
+    "amount",
+    "currency",
+    "debtorAccountReference",
+    "creditorAccountReference",
+    "occurredAt"
+  ],
+  "properties": {
+    "paymentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "consentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "amount": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "requestedExecutionDate": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "debtorAccountReference": {
+      "type": "string",
+      "const": "[REDACTED]"
+    },
+    "creditorAccountReference": {
+      "type": "string",
+      "const": "[REDACTED]"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fintechbankx.example/ln/loan/created/v1",
+  "title": "Lending.Loan.Created.v1 data",
+  "x-status": "Proposed",
+  "x-topic": "evt.ln.loan.created.v1",
+  "x-event-type": "Lending.Loan.Created.v1",
+  "x-producer": "svc-ln-loan-lifecycle",
+  "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",
+  "x-source": "fintechbankx-governance-api-contracts-asyncapi-catalog asyncapi/svc-ln-loan-lifecycle.yaml#/components/schemas/LoanCreatedData",
+  "type": "object",
+  "description": "Payload of Lending.Loan.Created.v1.",
+  "properties": {
+    "loanId": {
+      "type": "string",
+      "description": "Loan id (same as aggregateId).",
+      "minLength": 1
+    },
+    "customerId": {
+      "type": "string",
+      "description": "Customer id.",
+      "minLength": 1
+    },
+    "principalAmount": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/MonetaryAmount"
+        }
+      ],
+      "description": "Requested principal."
+    }
+  },
+  "required": [
+    "loanId",
+    "customerId",
+    "principalAmount"
+  ],
+  "$defs": {
+    "MonetaryAmount": {
+      "type": "object",
+      "description": "Money value. Amount is a decimal string to avoid binary floating point rounding.",
+      "required": [
+        "amount",
+        "currency"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string",
+          "pattern": "^-?[0-9]+(\\.[0-9]+)?$",
+          "examples": [
+            "25000.00"
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 currency code.",
+          "examples": [
+            "AED"
+          ]
+        }
+      }
+    }
+  }
+}
