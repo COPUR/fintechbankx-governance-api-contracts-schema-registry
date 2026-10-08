@@ -53,7 +53,7 @@ test('removing a schema file is breaking', () => {
 });
 
 test('accepted-breaking entries suppress only the listed findings', () => {
-  const accepted = readAccepted(`# v2 published on evt.tst.sample.created.v2, dual-publish until all consumers moved\nremoved-property ${REL} $.note\n`);
+  const accepted = readAccepted(`# Test.Sample.Created.v2 published on evt.tst.sample.v1 next to v1 until all consumers moved\nremoved-property ${REL} $.note\n`);
   const findings = run('breaking-removed-property').concat(run('breaking-newly-required'));
   assert.deepEqual(keys(filterAccepted(findings, accepted).open), [`newly-required ${REL} $.note`]);
 });

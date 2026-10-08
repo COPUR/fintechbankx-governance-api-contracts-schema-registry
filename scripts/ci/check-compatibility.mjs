@@ -55,7 +55,7 @@ for (const rel of baseFiles.sort()) {
   failed += open.length;
 }
 if (failed > 0) {
-  console.error(`schema compatibility check failed: ${failed} finding(s). Publish a new major version as a new file (.v<N+1>) on a new topic with dual-publish, or record an approved exception in compatibility/accepted-breaking.txt.`);
+  console.error(`schema compatibility check failed: ${failed} finding(s). Publish a new event major as a new file (.v<N+1>, eventType ...v<N+1>) on the same aggregate topic and publish both majors until consumers move, or record an approved exception in compatibility/accepted-breaking.txt.`);
   process.exit(1);
 }
 console.log(`schema compatibility check passed: ${changed} changed schema(s), no open findings`);

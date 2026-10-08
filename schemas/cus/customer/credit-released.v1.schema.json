@@ -3,7 +3,7 @@
   "$id": "https://schemas.fintechbankx.example/cus/customer/credit-released/v1",
   "title": "Customer.Customer.CreditReleased.v1 data",
   "x-status": "Proposed",
-  "x-topic": "evt.cus.customer.credit-released.v1",
+  "x-topic": "evt.cus.customer.v1",
   "x-event-type": "Customer.Customer.CreditReleased.v1",
   "x-producer": "svc-cus-profile-kyc",
   "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",

@@ -3,7 +3,7 @@
   "$id": "https://schemas.fintechbankx.example/pay/rtp/accepted/v1",
   "title": "Payments.PayRequest.Accepted.v1 data",
   "x-status": "Proposed",
-  "x-topic": "evt.pay.rtp.accepted.v1",
+  "x-topic": "evt.pay.rtp.v1",
   "x-event-type": "Payments.PayRequest.Accepted.v1",
   "x-producer": "svc-pay-request-to-pay",
   "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",

@@ -3,7 +3,7 @@
   "$id": "https://schemas.fintechbankx.example/rsk/risk/assessed/v1",
   "title": "Risk.RiskAssessment.Assessed.v1 data",
   "x-status": "Proposed",
-  "x-topic": "evt.rsk.risk.assessed.v1",
+  "x-topic": "evt.rsk.risk.v1",
   "x-event-type": "Risk.RiskAssessment.Assessed.v1",
   "x-producer": "svc-rsk-decisioning",
   "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",

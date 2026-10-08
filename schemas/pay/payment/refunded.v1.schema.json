@@ -3,7 +3,7 @@
   "$id": "https://schemas.fintechbankx.example/pay/payment/refunded/v1",
   "title": "Payments.Payment.Refunded.v1 data",
   "x-status": "Proposed",
-  "x-topic": "evt.pay.payment.refunded.v1",
+  "x-topic": "evt.pay.payment.v1",
   "x-event-type": "Payments.Payment.Refunded.v1",
   "x-producer": "svc-pay-initiation-settlement",
   "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",

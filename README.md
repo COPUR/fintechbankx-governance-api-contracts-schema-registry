@@ -59,7 +59,7 @@ Status: **Proposed** (API Governance Guild review required).
 
 | Path | Content |
 |---|---|
-| `schemas/<ctx>/<aggregate>/<event>.v<N>.schema.json` | `data` payload of topic `evt.<ctx>.<aggregate>.<event>.v<N>` (JSON Schema draft 2020-12, `x-topic`, `$id` `https://schemas.fintechbankx.example/<ctx>/<aggregate>/<event>/v<N>`) |
+| `schemas/<ctx>/<aggregate>/<event>.v<N>.schema.json` | `data` payload of event type `<Context>.<Aggregate>.<Event>.v<N>` (`x-event-type`), published on the aggregate topic `evt.<ctx>.<aggregate>.v<M>` (`x-topic`; one topic per aggregate, ADR-019). JSON Schema draft 2020-12, `$id` `https://schemas.fintechbankx.example/<ctx>/<aggregate>/<event>/v<N>` |
 | `schemas/common/event-envelope.v1.schema.json` | Standard event envelope shared by every topic |
 | [`compatibility/POLICY.md`](compatibility/POLICY.md) | Compatibility mode, breaking-change rules, exceptions, provider registration flow, versioning |
 | `compatibility/accepted-breaking.txt` | Approved exceptions to the compatibility gate |
@@ -73,8 +73,8 @@ from `fintechbankx-governance-api-contracts-asyncapi-catalog`) plus the imported
 FULL (backward and forward): consumers on a new schema must read old events, and events from new producers
 must not break consumers on the old schema. A change to an existing `.v<N>` file fails the gate when it removes
 a property or schema, makes a property required or no longer required, changes a type, a `const` or a validation
-keyword, removes an enum value, tightens `additionalProperties`, or edits `$id` / `x-topic` / `x-event-type`. A breaking change is a new file `.v<N+1>` on a new
-topic with dual-publish. Details: [`compatibility/POLICY.md`](compatibility/POLICY.md).
+keyword, removes an enum value, tightens `additionalProperties`, or edits `$id` / `x-topic` / `x-event-type`. A breaking change is a new file `.v<N+1>` with event type
+`...v<N+1>` on the same aggregate topic, and the producer publishes both majors until consumers move. Details: [`compatibility/POLICY.md`](compatibility/POLICY.md).
 
 ### Registering a new event
 
@@ -94,7 +94,7 @@ npm test   # validate-schemas + check-compatibility (BASE_REF, default origin/ma
 
 | Script | Fails when |
 |---|---|
-| `scripts/ci/validate-schemas.mjs` | a file is outside the layout; invalid JSON; not draft 2020-12; does not compile (Ajv 2020 strict + ajv-formats); `$id` does not match the path; no `title`; `x-topic` missing, malformed, or not the same ctx/aggregate/event/version as the path; duplicate `$id` or `x-topic` |
+| `scripts/ci/validate-schemas.mjs` | a file is outside the layout; invalid JSON; not draft 2020-12; does not compile (Ajv 2020 strict + ajv-formats); `$id` does not match the path; no `title`; `x-topic` missing or not the aggregate topic `evt.<ctx>.<aggregate>.v<M>` of the path's ctx/aggregate; `x-event-type` major differs from the file version; duplicate `$id` or `x-event-type` |
 | `scripts/ci/check-compatibility.mjs` | a schema that exists at the merge base of `BASE_REF` changed incompatibly (rules above) and the finding is not in `compatibility/accepted-breaking.txt` |
 | `scripts/ci/test/*.test.mjs` | a compatibility rule stops failing on its fixture pair, or a compatible fixture starts failing |
 

@@ -3,7 +3,7 @@
   "$id": "https://schemas.fintechbankx.example/ln/loan/payment-made/v1",
   "title": "Lending.Loan.PaymentMade.v1 data",
   "x-status": "Proposed",
-  "x-topic": "evt.ln.loan.payment-made.v1",
+  "x-topic": "evt.ln.loan.v1",
   "x-event-type": "Lending.Loan.PaymentMade.v1",
   "x-producer": "svc-ln-loan-lifecycle",
   "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",

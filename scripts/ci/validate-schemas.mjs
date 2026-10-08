@@ -10,9 +10,11 @@
 //   - has a $id other than https://schemas.fintechbankx.example/<ctx>/<aggregate>/<event>/v<N>
 //     (common: https://schemas.fintechbankx.example/common/<name>/v<N>);
 //   - has no title;
-//   - (event schemas) has no x-topic, or x-topic is not evt.<ctx>.<aggregate>.<event>.v<N> for the
-//     same ctx, aggregate, event and version as the path (file version == topic version);
-//   - shares its $id or x-topic with another file.
+//   - (event schemas) has no x-topic, or x-topic is not the aggregate topic evt.<ctx>.<aggregate>.v<M> for the
+//     path's ctx and aggregate (one topic per aggregate, ADR-019; the topic major M is independent of the file);
+//   - (event schemas) has no x-event-type, or its major differs from the file version (file version == event
+//     major: a breaking change is a new file and a new event major on the same topic);
+//   - shares its $id or x-event-type with another file.
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -22,7 +24,8 @@ import addFormats from 'ajv-formats';
 export const ID_BASE = 'https://schemas.fintechbankx.example';
 const EVENT_PATH_RE = /^schemas\/([a-z]+)\/([a-z0-9-]+)\/([a-z0-9-]+)\.v([0-9]+)\.schema\.json$/;
 const COMMON_PATH_RE = /^schemas\/common\/([a-z0-9-]+)\.v([0-9]+)\.schema\.json$/;
-const TOPIC_RE = /^evt\.([a-z]+)\.([a-z0-9-]+)\.([a-z0-9-]+)\.v([0-9]+)$/;
+const TOPIC_RE = /^evt\.([a-z]+)\.([a-z0-9-]+)\.v([0-9]+)$/;
+const EVENT_TYPE_RE = /^[A-Z][A-Za-z]*\.[A-Z][A-Za-z]*\.[A-Z][A-Za-z]*\.v([0-9]+)$/;
 
 export function listSchemaFiles(root) {
   const base = path.join(root, 'schemas');
@@ -57,7 +60,7 @@ export function expectedFor(rel) {
   m = EVENT_PATH_RE.exec(rel);
   if (m && m[1] !== 'common') {
     const [, ctx, aggregate, event, version] = m;
-    return { kind: 'event', id: `${ID_BASE}/${ctx}/${aggregate}/${event}/v${version}`, topic: `evt.${ctx}.${aggregate}.${event}.v${version}`, version };
+    return { kind: 'event', id: `${ID_BASE}/${ctx}/${aggregate}/${event}/v${version}`, topicPrefix: `evt.${ctx}.${aggregate}`, version };
   }
   return { error: `${rel}: path must be schemas/<ctx>/<aggregate>/<event>.v<N>.schema.json or schemas/common/<name>.v<N>.schema.json` };
 }
@@ -89,14 +92,18 @@ export function validateSchemas(root) {
       const topic = schema['x-topic'];
       const t = TOPIC_RE.exec(topic ?? '');
       if (!t) {
-        errors.push(`${rel}: x-topic ${topic} must match evt.<ctx>.<aggregate>.<event>.v<N>`);
-      } else {
-        if (t[4] !== exp.version) errors.push(`${rel}: file version v${exp.version} does not match x-topic version v${t[4]} (a new major version is a new file)`);
-        if (topic !== exp.topic) errors.push(`${rel}: x-topic ${topic} must be ${exp.topic} (path and topic must agree)`);
+        errors.push(`${rel}: x-topic ${topic} must be the aggregate topic evt.<ctx>.<aggregate>.v<M> (one topic per aggregate, ADR-019)`);
+      } else if (!topic.startsWith(`${exp.topicPrefix}.v`)) {
+        errors.push(`${rel}: x-topic ${topic} must be ${exp.topicPrefix}.v<M> (path and topic must agree)`);
       }
-      if (topic) {
-        if (seenTopic.has(topic)) errors.push(`${rel}: x-topic ${topic} also used by ${seenTopic.get(topic)}`);
-        else seenTopic.set(topic, rel);
+      const eventType = schema['x-event-type'];
+      const e = EVENT_TYPE_RE.exec(eventType ?? '');
+      if (!e) {
+        errors.push(`${rel}: x-event-type ${eventType} must match <Context>.<Aggregate>.<PastTenseEvent>.v<N>`);
+      } else {
+        if (e[1] !== exp.version) errors.push(`${rel}: file version v${exp.version} does not match the x-event-type major v${e[1]} (a new event major is a new file)`);
+        if (seenTopic.has(eventType)) errors.push(`${rel}: x-event-type ${eventType} also used by ${seenTopic.get(eventType)}`);
+        else seenTopic.set(eventType, rel);
       }
     }
     if (schema.$id) {

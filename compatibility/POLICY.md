@@ -7,8 +7,11 @@ Applies to every event payload schema under `schemas/`. Naming follows
 
 ## 1. What a schema describes
 
-- One file per topic: `schemas/<ctx>/<aggregate>/<event>.v<N>.schema.json` describes the `data` payload of
-  topic `evt.<ctx>.<aggregate>.<event>.v<N>` (field `x-topic`).
+- One file per event type and major: `schemas/<ctx>/<aggregate>/<event>.v<N>.schema.json` describes the `data`
+  payload of event type `<Context>.<Aggregate>.<Event>.v<N>` (field `x-event-type`). Every event type of an
+  aggregate is published on one topic, `evt.<ctx>.<aggregate>.v<M>` (field `x-topic`; ADR-019, one topic per
+  aggregate), keyed by the aggregate id, with the event type in the `eventType` record header. The event major N
+  and the topic major M are independent.
 - The envelope (`eventId`, `eventType`, `occurredAt`, `aggregateId`, `aggregateVersion`, `correlationId`,
   `causationId`, `producer`, `data`) is `schemas/common/event-envelope.v1.schema.json`. Event schemas point to
   it with `x-envelope`.
@@ -30,7 +33,7 @@ The gate `scripts/ci/check-compatibility.mjs` compares every schema that exists 
 | Rule | Example | Why it breaks |
 |---|---|---|
 | `removed-schema` | file deleted | consumers lose their contract |
-| `changed-id`, `changed-topic` | `x-topic` edited from `.v1` to `.v2` in the `.v1` file | a new major version must be a new file |
+| `changed-id`, `changed-topic` | `$id` or `x-topic` edited in an existing file | a new event major is a new file; a topic move is a topic major change (section 3) |
 | `removed-property` | `$.note` removed, including properties inside `$defs` or `allOf` | old consumers read a field that is no longer produced |
 | `newly-required` | `note` added to `required`, or a new required property | old data does not carry it, so new consumers reject replayed events |
 | `changed-type` | `string` to `["string","null"]`, or `number` to `string` | either side fails to parse; widening to null breaks old consumers |
@@ -49,11 +52,16 @@ the gate. Tightening them can still reject old data; reviewers treat that as bre
 
 ## 3. Breaking changes: new major version
 
-1. Add a new file `<event>.v<N+1>.schema.json` with `x-topic` `evt.<ctx>.<aggregate>.<event>.v<N+1>`. Never
-   edit the `.v<N>` file into the new shape.
-2. The provider publishes both topics (dual-publish, from the same outbox record) until every consumer listed
-   in the provider README `consumed_events` has moved.
+1. Add a new file `<event>.v<N+1>.schema.json` with `x-event-type` `<Context>.<Aggregate>.<Event>.v<N+1>` and
+   the same `x-topic` (the aggregate topic). Never edit the `.v<N>` file into the new shape.
+2. The provider publishes both event majors on that topic (two records with the same key, from the same outbox
+   record) until every consumer listed in the provider README `consumed_events` has moved.
+   Consumers skip event types they do not handle, so the new major does not disturb them.
 3. Only then may `.v<N>` be retired. Its removal is a `removed-schema` finding and needs an exception entry.
+
+The topic major (`evt.<ctx>.<aggregate>.v<M+1>`) changes only when the topic contract breaks: the record key,
+the partition count or the cleanup policy (ADR-019 section 5). Then every file of the aggregate gets the new
+`x-topic` in a new file and the producer publishes to both topics until consumers move.
 
 ## 4. Exceptions
 

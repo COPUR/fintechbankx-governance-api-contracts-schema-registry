@@ -3,7 +3,7 @@
   "$id": "https://schemas.fintechbankx.example/cmp/compliance/screened/v1",
   "title": "Compliance.ComplianceScreening.Screened.v1 data",
   "x-status": "Proposed",
-  "x-topic": "evt.cmp.compliance.screened.v1",
+  "x-topic": "evt.cmp.compliance.v1",
   "x-event-type": "Compliance.ComplianceScreening.Screened.v1",
   "x-producer": "svc-cmp-evidence",
   "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",

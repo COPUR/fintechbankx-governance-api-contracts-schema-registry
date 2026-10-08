@@ -3,7 +3,7 @@
   "$id": "https://schemas.fintechbankx.example/pay/payment/processing-started/v1",
   "title": "Payments.Payment.ProcessingStarted.v1 data",
   "x-status": "Proposed",
-  "x-topic": "evt.pay.payment.processing-started.v1",
+  "x-topic": "evt.pay.payment.v1",
   "x-event-type": "Payments.Payment.ProcessingStarted.v1",
   "x-producer": "svc-pay-initiation-settlement",
   "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",
