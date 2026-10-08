@@ -33,6 +33,16 @@
         }
       ],
       "description": "Amount actually paid."
+    },
+    "transactionReference": {
+      "type": "string",
+      "description": "Settlement transaction reference of the payment.",
+      "minLength": 1
+    },
+    "completedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the payment completed."
     }
   },
   "required": [
