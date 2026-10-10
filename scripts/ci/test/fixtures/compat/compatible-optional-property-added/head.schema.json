@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://schemas.fintechbankx.example/tst/sample/created/v1",
   "title": "Test.Sample.Created.v1 data",
-  "x-topic": "evt.tst.sample.created.v1",
+  "x-topic": "evt.tst.sample.v1",
   "type": "object",
   "required": [
     "sampleId",

@@ -66,7 +66,7 @@ Status: **Proposed** (API Governance Guild review required).
 | `scripts/sync/from-asyncapi.mjs` | Regenerates the payload schemas from the AsyncAPI catalog |
 
 Today the schemas cover the aggregate topics `evt.ln.loan.v1`, `evt.pay.payment.v1`, `evt.pay.rtp.v1`,
-`evt.cus.customer.v1`, `evt.pay.mandate.v1`, `evt.pay.bulk.v1`, `evt.rsk.risk.v1` and `evt.cmp.compliance.v1`,
+`evt.cus.customer.v1` (seven event types, KycStatusChanged included), `evt.pay.mandate.v1`, `evt.pay.bulk.v1`, `evt.rsk.risk.v1` and `evt.cmp.compliance.v1`,
 generated from `fintechbankx-governance-api-contracts-asyncapi-catalog`, plus the imported open-finance payment
 fact. The mandate, bulk, risk and compliance specs are on catalog PRs stacked on the catalog's PR #10, so their
 schemas were generated from those specs converted to the aggregate topic (ADR-019). Re-run the sync once those
