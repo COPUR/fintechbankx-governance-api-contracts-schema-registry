@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fintechbankx.example/pay/mandate/revoked/v1",
+  "title": "Payments.Mandate.Revoked.v1 data",
+  "x-status": "Proposed",
+  "x-topic": "evt.pay.mandate.v1",
+  "x-event-type": "Payments.Mandate.Revoked.v1",
+  "x-producer": "svc-pay-recurring-mandates",
+  "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",
+  "x-source": "fintechbankx-governance-api-contracts-asyncapi-catalog asyncapi/svc-pay-recurring-mandates.yaml#/components/schemas/MandateRevokedData",
+  "type": "object",
+  "description": "Payload of Payments.Mandate.Revoked.v1.",
+  "additionalProperties": false,
+  "properties": {
+    "mandateId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tppId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reason": {
+      "type": "string",
+      "description": "Free-text reason given by the TPP. Must not contain personal data."
+    },
+    "revokedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "mandateId",
+    "tppId",
+    "reason",
+    "revokedAt"
+  ]
+}

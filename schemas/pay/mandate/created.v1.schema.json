@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fintechbankx.example/pay/mandate/created/v1",
+  "title": "Payments.Mandate.Created.v1 data",
+  "x-status": "Proposed",
+  "x-topic": "evt.pay.mandate.v1",
+  "x-event-type": "Payments.Mandate.Created.v1",
+  "x-producer": "svc-pay-recurring-mandates",
+  "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",
+  "x-source": "fintechbankx-governance-api-contracts-asyncapi-catalog asyncapi/svc-pay-recurring-mandates.yaml#/components/schemas/MandateCreatedData",
+  "type": "object",
+  "description": "Payload of Payments.Mandate.Created.v1.",
+  "additionalProperties": false,
+  "properties": {
+    "mandateId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Mandate (VRP consent) id; equals aggregateId."
+    },
+    "tppId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Client id of the TPP that holds the mandate."
+    },
+    "psuId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Pseudonymous PSU id."
+    },
+    "maximumAmount": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/MonetaryAmount"
+        }
+      ],
+      "description": "Maximum accepted total per calendar month in Asia/Dubai (mandates.limit-period-zone)."
+    },
+    "periodType": {
+      "type": "string",
+      "const": "Month",
+      "description": "Limit period. Always Month in v1."
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "debtorAccountLinked": {
+      "type": "boolean",
+      "description": "True when a debtor account was verified with the accounts service. The account id is not published."
+    }
+  },
+  "required": [
+    "mandateId",
+    "tppId",
+    "psuId",
+    "maximumAmount",
+    "periodType",
+    "expiresAt",
+    "debtorAccountLinked"
+  ],
+  "$defs": {
+    "MonetaryAmount": {
+      "type": "object",
+      "description": "Money value. Amount is a decimal string to avoid binary floating point rounding.",
+      "required": [
+        "amount",
+        "currency"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string",
+          "pattern": "^-?[0-9]+(\\.[0-9]+)?$",
+          "examples": [
+            "25000.00"
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 currency code.",
+          "examples": [
+            "AED"
+          ]
+        }
+      }
+    }
+  }
+}
