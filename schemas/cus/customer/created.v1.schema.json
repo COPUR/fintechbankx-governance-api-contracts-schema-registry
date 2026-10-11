@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fintechbankx.example/cus/customer/created/v1",
+  "title": "Customer.Customer.Created.v1 data",
+  "x-status": "Proposed",
+  "x-topic": "evt.cus.customer.v1",
+  "x-event-type": "Customer.Customer.Created.v1",
+  "x-producer": "svc-cus-profile-kyc",
+  "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",
+  "x-source": "fintechbankx-governance-api-contracts-asyncapi-catalog asyncapi/svc-cus-profile-kyc.yaml#/components/schemas/CustomerCreatedData",
+  "type": "object",
+  "description": "Payload of Customer.Customer.Created.v1. Omitted from the source class: customerName (personal data; consumers read it through the customer API).",
+  "properties": {
+    "customerId": {
+      "type": "string",
+      "description": "Customer id (same as aggregateId).",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "customerId"
+  ]
+}

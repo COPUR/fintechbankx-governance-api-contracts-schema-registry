@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fintechbankx.example/cus/customer/credit-reserved/v1",
+  "title": "Customer.Customer.CreditReserved.v1 data",
+  "x-status": "Proposed",
+  "x-topic": "evt.cus.customer.v1",
+  "x-event-type": "Customer.Customer.CreditReserved.v1",
+  "x-producer": "svc-cus-profile-kyc",
+  "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",
+  "x-source": "fintechbankx-governance-api-contracts-asyncapi-catalog asyncapi/svc-cus-profile-kyc.yaml#/components/schemas/CustomerCreditReservedData",
+  "type": "object",
+  "description": "Payload of Customer.Customer.CreditReserved.v1.",
+  "properties": {
+    "customerId": {
+      "type": "string",
+      "description": "Customer id.",
+      "minLength": 1
+    },
+    "reservedAmount": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/MonetaryAmount"
+        }
+      ],
+      "description": "Reserved amount."
+    }
+  },
+  "required": [
+    "customerId",
+    "reservedAmount"
+  ],
+  "$defs": {
+    "MonetaryAmount": {
+      "type": "object",
+      "description": "Money value. Amount is a decimal string to avoid binary floating point rounding.",
+      "required": [
+        "amount",
+        "currency"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string",
+          "pattern": "^-?[0-9]+(\\.[0-9]+)?$",
+          "examples": [
+            "25000.00"
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 currency code.",
+          "examples": [
+            "AED"
+          ]
+        }
+      }
+    }
+  }
+}

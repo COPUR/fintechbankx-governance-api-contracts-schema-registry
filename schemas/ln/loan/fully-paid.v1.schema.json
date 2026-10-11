@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fintechbankx.example/ln/loan/fully-paid/v1",
+  "title": "Lending.Loan.FullyPaid.v1 data",
+  "x-status": "Proposed",
+  "x-topic": "evt.ln.loan.v1",
+  "x-event-type": "Lending.Loan.FullyPaid.v1",
+  "x-producer": "svc-ln-loan-lifecycle",
+  "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",
+  "x-source": "fintechbankx-governance-api-contracts-asyncapi-catalog asyncapi/svc-ln-loan-lifecycle.yaml#/components/schemas/LoanFullyPaidData",
+  "type": "object",
+  "description": "Payload of Lending.Loan.FullyPaid.v1.",
+  "properties": {
+    "loanId": {
+      "type": "string",
+      "description": "Loan id.",
+      "minLength": 1
+    },
+    "customerId": {
+      "type": "string",
+      "description": "Customer id.",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "loanId",
+    "customerId"
+  ]
+}

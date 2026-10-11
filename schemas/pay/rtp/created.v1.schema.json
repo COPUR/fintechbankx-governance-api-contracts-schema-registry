@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fintechbankx.example/pay/rtp/created/v1",
+  "title": "Payments.PayRequest.Created.v1 data",
+  "x-status": "Proposed",
+  "x-topic": "evt.pay.rtp.v1",
+  "x-event-type": "Payments.PayRequest.Created.v1",
+  "x-producer": "svc-pay-request-to-pay",
+  "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",
+  "x-source": "fintechbankx-governance-api-contracts-asyncapi-catalog asyncapi/svc-pay-request-to-pay.yaml#/components/schemas/PayRequestCreatedData",
+  "type": "object",
+  "description": "Payload of Payments.PayRequest.Created.v1.",
+  "properties": {
+    "creditorName": {
+      "type": "string",
+      "description": "Creditor display name as entered in the request."
+    },
+    "amount": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/DecimalAmount"
+        }
+      ],
+      "description": "Requested amount."
+    },
+    "currency": {
+      "type": "string",
+      "description": "ISO 4217 currency code.",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "debtorId": {
+      "type": "string",
+      "description": "Pseudonymous PSU id of the debtor.",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "creditorName",
+    "amount",
+    "currency",
+    "debtorId"
+  ],
+  "$defs": {
+    "DecimalAmount": {
+      "type": "string",
+      "pattern": "^-?[0-9]+(\\.[0-9]+)?$",
+      "description": "Decimal number encoded as a string."
+    }
+  }
+}

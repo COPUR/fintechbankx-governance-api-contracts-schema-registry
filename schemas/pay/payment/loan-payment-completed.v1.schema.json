@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fintechbankx.example/pay/payment/loan-payment-completed/v1",
+  "title": "Payments.Payment.LoanPaymentCompleted.v1 data",
+  "x-status": "Proposed",
+  "x-topic": "evt.pay.payment.v1",
+  "x-event-type": "Payments.Payment.LoanPaymentCompleted.v1",
+  "x-producer": "svc-pay-initiation-settlement",
+  "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",
+  "x-source": "fintechbankx-governance-api-contracts-asyncapi-catalog asyncapi/svc-pay-initiation-settlement.yaml#/components/schemas/PaymentLoanPaymentCompletedData",
+  "type": "object",
+  "description": "Payload of Payments.Payment.LoanPaymentCompleted.v1.",
+  "properties": {
+    "paymentId": {
+      "type": "string",
+      "description": "Payment id.",
+      "minLength": 1
+    },
+    "customerId": {
+      "type": "string",
+      "description": "Customer id.",
+      "minLength": 1
+    },
+    "loanId": {
+      "type": "string",
+      "description": "Loan id.",
+      "minLength": 1
+    },
+    "actualAmount": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/MonetaryAmount"
+        }
+      ],
+      "description": "Amount actually paid."
+    },
+    "transactionReference": {
+      "type": "string",
+      "description": "Settlement transaction reference of the payment.",
+      "minLength": 1
+    },
+    "completedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the payment completed."
+    }
+  },
+  "required": [
+    "paymentId",
+    "customerId",
+    "loanId",
+    "actualAmount"
+  ],
+  "$defs": {
+    "MonetaryAmount": {
+      "type": "object",
+      "description": "Money value. Amount is a decimal string to avoid binary floating point rounding.",
+      "required": [
+        "amount",
+        "currency"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string",
+          "pattern": "^-?[0-9]+(\\.[0-9]+)?$",
+          "examples": [
+            "25000.00"
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 currency code.",
+          "examples": [
+            "AED"
+          ]
+        }
+      }
+    }
+  }
+}

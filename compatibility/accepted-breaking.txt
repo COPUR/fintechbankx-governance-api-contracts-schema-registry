@@ -1,0 +1,6 @@
+# Accepted breaking schema changes. Status: Proposed.
+#
+# One finding key per line, exactly as scripts/ci/check-compatibility.mjs prints it after "BREAKING ",
+# followed by a '#' comment with the approval reference (ADR or backlog id) and the dual-publish plan.
+# Example (do not uncomment):
+# removed-property schemas/ln/loan/created.v1.schema.json $.legacyCode  # ADR-NNN, v2 live, dual-publish ended
