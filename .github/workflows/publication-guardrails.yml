@@ -71,11 +71,11 @@ jobs:
           esac
 
           # A password value is tested one match at a time. A placeholder (<name>, ${NAME}, var.name)
-          # or a whole boolean switch (true or false) is not a secret; a ${NAME:?...} or ${NAME:} form carries no value.
-          # Any other value, including a shell default such as ${NAME:-value}, is reported.
-          PLACEHOLDER='password\s*[:=]\s*[\x22\x27]?(<[A-Za-z0-9_. -]+>|\$\{[A-Za-z_][A-Za-z0-9_]*(:\?[A-Za-z0-9_]*|:)?|var\.[A-Za-z_][A-Za-z0-9_]*|true|false)[\x22\x27]?\s*$'
+          # or a whole boolean switch (true or false) is not a secret; ${NAME:} and a nested ${...} default carry no value.
+          # Any other value, including a literal shell default such as ${NAME:-value} or ${NAME:value}, is reported.
+          PLACEHOLDER='password\s*[:=]\s*[\x22\x27]?(<[A-Za-z0-9_. -]+>|\$\{[A-Za-z_][A-Za-z0-9_.-]*(:(\$\{[A-Za-z_][A-Za-z0-9_.-]*:?)?)?|var\.[A-Za-z_][A-Za-z0-9_]*|true|false)[\x22\x27]?\s*$'
           status=0
-          values=$(rg -i -o -n 'password\s*[:=]\s*[\x22\x27]?[^\x22\x27\s,;}#]*' . "${EXCLUDES[@]}") || status=$?
+          values=$(rg -i -o -n '\bpassword\s*[:=]\s*[\x22\x27]?[^\x22\x27\s,;}#]*' . "${EXCLUDES[@]}") || status=$?
           case $status in
             0) ;;
             1) values= ;;
