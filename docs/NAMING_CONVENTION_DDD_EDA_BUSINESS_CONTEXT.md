@@ -216,6 +216,8 @@ Example:
 
 `evt.pay.payment.dlq.v1`
 
+Dead-letter topics are consumer-owned (ADR-019): a consumer that gives up on a record after bounded retries writes it to the dead-letter topic in its own namespace, never in the source topic's namespace. For example, the loan service dead-letters a failed `evt.pay.payment.v1` record to `evt.ln.loan.dlq.v1`, not to `evt.pay.payment.dlq.v1`.
+
 ## Branch and Release Naming for New Repositories
 
 Default branches:
