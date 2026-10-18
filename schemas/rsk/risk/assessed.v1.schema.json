@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fintechbankx.example/rsk/risk/assessed/v1",
+  "title": "Risk.RiskAssessment.Assessed.v1 data",
+  "x-status": "Proposed",
+  "x-topic": "evt.rsk.risk.v1",
+  "x-event-type": "Risk.RiskAssessment.Assessed.v1",
+  "x-producer": "svc-rsk-decisioning",
+  "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",
+  "x-source": "fintechbankx-governance-api-contracts-asyncapi-catalog asyncapi/svc-rsk-decisioning.yaml#/components/schemas/RiskAssessedData",
+  "type": "object",
+  "description": "Payload of Risk.RiskAssessment.Assessed.v1. Ids, the decision and reason codes only; no customer or counterparty data.",
+  "properties": {
+    "assessmentId": {
+      "type": "string",
+      "pattern": "^RISK-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+      "examples": [
+        "RISK-0b9d1c5e-3f4a-4d8e-9a71-2c6f0e5b7d10"
+      ],
+      "description": "Assessment id, `RISK-` followed by a UUID (same as aggregateId)."
+    },
+    "transactionId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Id of the assessed transaction, as given by the caller."
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "ALLOW",
+        "REVIEW",
+        "BLOCK"
+      ],
+      "description": "Decision of record. REVIEW puts the transaction in the manual review queue."
+    },
+    "score": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Risk score the policy produced."
+    },
+    "amount": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/MonetaryAmount"
+        }
+      ],
+      "description": "Assessed amount."
+    },
+    "reasons": {
+      "type": "array",
+      "description": "Policy reason codes, for example HIGH_AMOUNT, VERY_HIGH_AMOUNT, HIGH_RISK_COUNTRY, HIGH_VELOCITY, MEDIUM_VELOCITY. Consumers must accept codes they do not know.",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z][A-Z0-9_]*$"
+      }
+    },
+    "assessedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the decision was made (UTC)."
+    }
+  },
+  "required": [
+    "assessmentId",
+    "transactionId",
+    "decision",
+    "score",
+    "amount",
+    "reasons",
+    "assessedAt"
+  ],
+  "$defs": {
+    "MonetaryAmount": {
+      "type": "object",
+      "description": "Money value. Amount is a decimal string to avoid binary floating point rounding.",
+      "required": [
+        "amount",
+        "currency"
+      ],
+      "properties": {
+        "amount": {
+          "type": "string",
+          "pattern": "^-?[0-9]+(\\.[0-9]+)?$",
+          "examples": [
+            "25000.00"
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 currency code.",
+          "examples": [
+            "AED"
+          ]
+        }
+      }
+    }
+  }
+}

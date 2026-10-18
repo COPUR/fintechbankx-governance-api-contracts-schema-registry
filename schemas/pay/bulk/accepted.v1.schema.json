@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fintechbankx.example/pay/bulk/accepted/v1",
+  "title": "Payments.BulkFile.Accepted.v1 data",
+  "x-status": "Proposed",
+  "x-topic": "evt.pay.bulk.v1",
+  "x-event-type": "Payments.BulkFile.Accepted.v1",
+  "x-producer": "svc-pay-bulk-orchestration",
+  "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",
+  "x-source": "fintechbankx-governance-api-contracts-asyncapi-catalog asyncapi/svc-pay-bulk-orchestration.yaml#/components/schemas/BulkFileAcceptedData",
+  "type": "object",
+  "description": "Payload of Payments.BulkFile.Accepted.v1.",
+  "required": [
+    "fileId",
+    "consentId",
+    "tppId",
+    "integrityMode",
+    "totalCount",
+    "acceptedCount",
+    "rejectedCount",
+    "totalAmount",
+    "currency"
+  ],
+  "properties": {
+    "fileId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "consentId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Payment consent (owned by svc-of-consent-auth) the file was uploaded under."
+    },
+    "tppId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Third-party provider that uploaded the file."
+    },
+    "integrityMode": {
+      "type": "string",
+      "enum": [
+        "PARTIAL_REJECTION",
+        "FULL_REJECTION"
+      ]
+    },
+    "totalCount": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "acceptedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Items that passed validation at upload."
+    },
+    "rejectedCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "totalAmount": {
+      "$ref": "#/$defs/DecimalAmount"
+    },
+    "currency": {
+      "$ref": "#/$defs/CurrencyCode"
+    }
+  },
+  "$defs": {
+    "CurrencyCode": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$",
+      "description": "ISO 4217 alphabetic currency code of the file, for example AED."
+    },
+    "DecimalAmount": {
+      "type": "string",
+      "pattern": "^[0-9]+(\\.[0-9]+)?$",
+      "description": "Non-negative decimal string with exactly the minor units of the accompanying currency (0 for JPY, 2 for AED, 3 for KWD), for example 1500, 1500.00 or 1.234."
+    }
+  }
+}

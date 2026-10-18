@@ -49,6 +49,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Full history so the schema compatibility check (npm test) can diff against the base branch.
+          fetch-depth: 0
 
       - name: Set up Java 23
         uses: actions/setup-java@v4
@@ -63,6 +66,9 @@ jobs:
 
       - name: Run tests
         shell: bash
+        env:
+          # Base for scripts/ci/check-compatibility.mjs (run by npm test).
+          BASE_REF: origin/${{ github.base_ref || 'main' }}
         run: |
           if [ -f build.gradle ] || [ -f settings.gradle ]; then
             gradle --no-daemon test

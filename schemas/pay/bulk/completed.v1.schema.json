@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fintechbankx.example/pay/bulk/completed/v1",
+  "title": "Payments.BulkFile.Completed.v1 data",
+  "x-status": "Proposed",
+  "x-topic": "evt.pay.bulk.v1",
+  "x-event-type": "Payments.BulkFile.Completed.v1",
+  "x-producer": "svc-pay-bulk-orchestration",
+  "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",
+  "x-source": "fintechbankx-governance-api-contracts-asyncapi-catalog asyncapi/svc-pay-bulk-orchestration.yaml#/components/schemas/BulkFileCompletedData",
+  "type": "object",
+  "description": "Payload of Payments.BulkFile.Completed.v1.",
+  "required": [
+    "fileId",
+    "outcome",
+    "totalCount",
+    "acceptedCount",
+    "rejectedCount",
+    "acceptedAmount",
+    "completedAt"
+  ],
+  "properties": {
+    "fileId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "COMPLETED",
+        "PARTIALLY_ACCEPTED"
+      ]
+    },
+    "totalCount": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "acceptedCount": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "rejectedCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "acceptedAmount": {
+      "$ref": "#/$defs/DecimalAmount"
+    },
+    "completedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "$defs": {
+    "DecimalAmount": {
+      "type": "string",
+      "pattern": "^[0-9]+(\\.[0-9]+)?$",
+      "description": "Non-negative decimal string with exactly the minor units of the accompanying currency (0 for JPY, 2 for AED, 3 for KWD), for example 1500, 1500.00 or 1.234."
+    }
+  }
+}

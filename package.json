@@ -1,0 +1,22 @@
+{
+  "name": "fintechbankx-governance-api-contracts-schema-registry",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Event payload JSON Schemas (draft 2020-12) with layout, $id and backward-compatibility gates.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "sync:asyncapi": "node scripts/sync/from-asyncapi.mjs",
+    "validate": "node scripts/ci/validate-schemas.mjs",
+    "compat": "node scripts/ci/check-compatibility.mjs",
+    "test:unit": "node --test \"scripts/ci/test/*.test.mjs\"",
+    "test": "npm run validate && npm run compat && npm run test:unit"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
+    "yaml": "2.9.1"
+  }
+}

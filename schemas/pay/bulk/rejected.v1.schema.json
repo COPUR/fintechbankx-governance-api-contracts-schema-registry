@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fintechbankx.example/pay/bulk/rejected/v1",
+  "title": "Payments.BulkFile.Rejected.v1 data",
+  "x-status": "Proposed",
+  "x-topic": "evt.pay.bulk.v1",
+  "x-event-type": "Payments.BulkFile.Rejected.v1",
+  "x-producer": "svc-pay-bulk-orchestration",
+  "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",
+  "x-source": "fintechbankx-governance-api-contracts-asyncapi-catalog asyncapi/svc-pay-bulk-orchestration.yaml#/components/schemas/BulkFileRejectedData",
+  "type": "object",
+  "description": "Payload of Payments.BulkFile.Rejected.v1.",
+  "required": [
+    "fileId",
+    "totalCount",
+    "rejectedCount",
+    "rejectedAt",
+    "reason"
+  ],
+  "properties": {
+    "fileId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "totalCount": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "rejectedCount": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "rejectedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "ALL_ITEMS_REJECTED",
+        "CONSENT_NOT_USABLE"
+      ],
+      "description": "Why no item is released. For CONSENT_NOT_USABLE rejectedCount equals totalCount: items validated earlier are not released either."
+    }
+  }
+}

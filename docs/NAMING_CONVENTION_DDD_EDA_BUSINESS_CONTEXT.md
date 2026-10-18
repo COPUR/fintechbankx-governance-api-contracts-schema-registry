@@ -11,6 +11,8 @@ Define a single enterprise naming standard for newly created:
 5. Event topics and contracts
 
 This standard is based on bounded context ownership, event-driven integration, and low-coupling design.
+For the broader repository strategy and squad ownership model, see:
+[`REPO_NAMING_AND_OWNERSHIP_STRATEGY.md`](REPO_NAMING_AND_OWNERSHIP_STRATEGY.md).
 
 ## Core Principles
 
@@ -30,6 +32,15 @@ This standard is based on bounded context ownership, event-driven integration, a
 | Customer | `cus` |
 | Risk | `rsk` |
 | Compliance | `cmp` |
+| Core Banking | `acc` |
+| Islamic Finance | `isf` |
+| Digital Currency Wallet | `dcw` |
+| Payment Schemes | `psg` |
+| Engagement Rewards | `rwd` |
+| Process Orchestration | `bpo` |
+| Treasury and Liquidity | `liq` |
+| Notifications | `ntf` |
+| Regulatory Reporting | `reg` |
 | Identity Platform | `idn` |
 | Mesh Security Platform | `msh` |
 | Event Platform | `evt` |
@@ -165,15 +176,21 @@ Examples:
 
 ### Topic naming
 
-Format:
+Format: one topic per aggregate (owner decision 2026-10-08, ADR-019):
 
-`evt.<context-code>.<aggregate>.<event-name>.v<major>`
+`evt.<context-code>.<aggregate>.v<major>`
 
 Examples:
 
-1. `evt.of.consent.created.v1`
-2. `evt.pay.payment.settled.v1`
-3. `evt.ln.loan.disbursed.v1`
+1. `evt.of.consent.v1`
+2. `evt.pay.payment.v1`
+3. `evt.ln.loan.v1`
+
+Every event of the aggregate goes to its topic, keyed by the aggregate id, so one aggregate's events stay
+ordered in one partition. The event is named by its event type (below), carried in the envelope and in the
+`eventType` record header. Consumers skip event types they do not handle. The topic major changes only when
+the key, partition count or cleanup policy changes; a breaking change to one event is a new event major on
+the same topic.
 
 ### Event type (header/payload metadata)
 
@@ -206,6 +223,8 @@ Example:
 
 `evt.pay.payment.dlq.v1`
 
+Dead-letter topics are consumer-owned (ADR-019): a consumer that gives up on a record after bounded retries writes it to the dead-letter topic in its own namespace, never in the source topic's namespace. For example, the loan service dead-letters a failed `evt.pay.payment.v1` record to `evt.ln.loan.dlq.v1`, not to `evt.pay.payment.dlq.v1`.
+
 ## Branch and Release Naming for New Repositories
 
 Default branches:
@@ -225,10 +244,12 @@ Every repository must include these metadata tags in `README` and `CODEOWNERS`:
 
 1. `bounded_context`
 2. `owning_squad`
-3. `upstream_dependencies`
-4. `published_events`
-5. `consumed_events`
-6. `data_owner`
+3. `owning_tribe`
+4. `review_cadence`
+5. `data_owner`
+6. `upstream_dependencies`
+7. `published_events`
+8. `consumed_events`
 
 ## Compliance Enforcement Hooks
 

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fintechbankx.example/cus/customer/kyc-status-changed/v1",
+  "title": "Customer.Customer.KycStatusChanged.v1 data",
+  "x-status": "Proposed",
+  "x-topic": "evt.cus.customer.v1",
+  "x-event-type": "Customer.Customer.KycStatusChanged.v1",
+  "x-producer": "svc-cus-profile-kyc",
+  "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",
+  "x-source": "fintechbankx-governance-api-contracts-asyncapi-catalog asyncapi/svc-cus-profile-kyc.yaml#/components/schemas/CustomerKycStatusChangedData",
+  "type": "object",
+  "description": "Payload of Customer.Customer.KycStatusChanged.v1. Never carries who made the decision or personal data.",
+  "properties": {
+    "customerId": {
+      "type": "string",
+      "description": "Customer id.",
+      "minLength": 1
+    },
+    "kycStatus": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "VERIFIED",
+        "REJECTED"
+      ]
+    },
+    "previousKycStatus": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "VERIFIED",
+        "REJECTED"
+      ]
+    },
+    "kycSource": {
+      "type": "string",
+      "enum": [
+        "MIGRATED",
+        "STAFF"
+      ]
+    },
+    "verifiedAt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time",
+      "description": "When the customer was verified; null unless kycStatus is VERIFIED."
+    }
+  },
+  "required": [
+    "customerId",
+    "kycStatus",
+    "previousKycStatus",
+    "kycSource",
+    "verifiedAt"
+  ]
+}

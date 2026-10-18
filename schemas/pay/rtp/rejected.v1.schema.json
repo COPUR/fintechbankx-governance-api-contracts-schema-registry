@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.fintechbankx.example/pay/rtp/rejected/v1",
+  "title": "Payments.PayRequest.Rejected.v1 data",
+  "x-status": "Proposed",
+  "x-topic": "evt.pay.rtp.v1",
+  "x-event-type": "Payments.PayRequest.Rejected.v1",
+  "x-producer": "svc-pay-request-to-pay",
+  "x-envelope": "https://schemas.fintechbankx.example/common/event-envelope/v1",
+  "x-source": "fintechbankx-governance-api-contracts-asyncapi-catalog asyncapi/svc-pay-request-to-pay.yaml#/components/schemas/PayRequestRejectedData",
+  "type": "object",
+  "description": "Payload of Payments.PayRequest.Rejected.v1.",
+  "properties": {}
+}
