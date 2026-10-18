@@ -34,6 +34,13 @@ For the broader repository strategy and squad ownership model, see:
 | Compliance | `cmp` |
 | Core Banking | `acc` |
 | Islamic Finance | `isf` |
+| Digital Currency Wallet | `dcw` |
+| Payment Schemes | `psg` |
+| Engagement Rewards | `rwd` |
+| Process Orchestration | `bpo` |
+| Treasury and Liquidity | `liq` |
+| Notifications | `ntf` |
+| Regulatory Reporting | `reg` |
 | Identity Platform | `idn` |
 | Mesh Security Platform | `msh` |
 | Event Platform | `evt` |
